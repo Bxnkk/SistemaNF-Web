@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Aluno - Sistema NF 2.0</title>
+    <link rel="stylesheet" th:href="@{/css/sistema.css}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">NF</div>
+            <div><div class="brand-name">Sistema NF</div><span class="brand-subtitle">Gestão acadêmica · 2.0</span></div>
+        </div>
+        <p class="nav-caption">Menu principal</p>
+        <a class="nav-link active" th:href="@{/aluno}"><span>▦</span> Meu desempenho</a>
+        <div class="sidebar-footer">Área do estudante</div>
+    </aside>
+
+    <div class="main-area">
+        <header class="topbar">
+            <h2 class="topbar-title">Painel do Aluno</h2>
+            <div class="user-chip"><span class="avatar">A</span><span th:text="${usuario}">Aluno</span></div>
+        </header>
+        <main class="content">
+            <section class="page-heading">
+                <h1>Olá, <span th:text="${usuario}">Aluno</span>!</h1>
+                <p>Acompanhe suas notas, faltas e frequência acadêmica.</p>
+            </section>
+            <section class="card">
+                <div class="card-heading">
+                    <div><h2>Meu desempenho acadêmico</h2><p class="card-description">Consulte seus registros por turma e disciplina.</p></div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Turma</th><th>Disciplina</th><th>Nota</th><th>Faltas</th><th>Frequência</th><th>Situação</th></tr></thead>
+                        <tbody>
+                        <tr th:each="registro : ${registros}">
+                            <td th:text="${registro.turma}"></td>
+                            <td th:text="${registro.disciplina}"></td>
+                            <td th:text="${registro.nota != null ? registro.nota : 'Não cadastrada'}"></td>
+                            <td th:text="${registro.faltas}"></td>
+                            <td><span th:text="${#numbers.formatDecimal(registro.frequencia, 1, 2)}"></span>%</td>
+                            <td><span class="status-pill" th:text="${registro.situacao}"></span></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(registros)}"><td class="empty-state" colspan="6">Nenhum registro acadêmico encontrado.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <form class="logout-form" th:action="@{/logout}" method="post"><button class="button-secondary" type="submit">Sair do sistema</button></form>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

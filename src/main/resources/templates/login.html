@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar - Sistema NF 2.0</title>
+    <link rel="stylesheet" th:href="@{/css/sistema.css}">
+</head>
+<body class="login-page">
+    <main class="login-card">
+        <div class="login-brand">
+            <div class="brand-mark">NF</div>
+            <div>
+                <div class="brand-name">Sistema NF 2.0</div>
+                <span class="brand-subtitle">Gestão acadêmica</span>
+            </div>
+        </div>
+        <h1>Bem-vindo!</h1>
+        <p class="subtitle">Acesse sua conta para continuar.</p>
+
+        <div class="notice notice-error" th:if="${param.error}" role="alert">
+            Usuário ou senha incorretos.
+        </div>
+        <div class="notice notice-success" th:if="${param.logout}" role="status">
+            Você saiu do sistema com segurança.
+        </div>
+
+        <form class="login-form" th:action="@{/login}" method="post">
+            <div class="field">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" name="username" autocomplete="username" placeholder="Digite seu usuário" required>
+            </div>
+            <div class="field">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Digite sua senha" required>
+            </div>
+            <button type="submit">Entrar no sistema</button>
+        </form>
+        <p class="login-footer">Sistema de Notas e Faltas · 2.0</p>
+    </main>
+</body>
+</html>

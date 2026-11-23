@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Professor - Sistema NF 2.0</title>
+    <link rel="stylesheet" th:href="@{/css/sistema.css}">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">NF</div>
+            <div><div class="brand-name">Sistema NF</div><span class="brand-subtitle">Gestão acadêmica · 2.0</span></div>
+        </div>
+        <p class="nav-caption">Menu principal</p>
+        <a class="nav-link active" th:href="@{/professor}"><span>▦</span> Painel do professor</a>
+        <div class="sidebar-footer">Área do corpo docente</div>
+    </aside>
+
+    <div class="main-area">
+        <header class="topbar">
+            <h2 class="topbar-title">Painel do Professor</h2>
+            <div class="user-chip"><span class="avatar">P</span><span th:text="${usuario}">Professor</span></div>
+        </header>
+
+        <main class="content">
+            <section class="page-heading">
+                <h1>Olá, <span th:text="${usuario}">Professor</span>!</h1>
+                <p>Acompanhe os registros acadêmicos e gerencie notas e faltas dos alunos.</p>
+            </section>
+
+            <div class="notice notice-success" th:if="${mensagem}" role="status"><p th:text="${mensagem}"></p></div>
+            <div class="notice notice-error" th:if="${erro}" role="alert"><p th:text="${erro}"></p></div>
+
+            <section class="card audit-card">
+                <div class="card-heading">
+                    <div>
+                        <h2>Auditoria e integridade</h2>
+                        <p class="card-description">Verifique se a cadeia de hashes SHA-256 permanece íntegra e se os registros de auditoria apresentam inconsistências.</p>
+                    </div>
+                </div>
+                <div class="audit-actions">
+                    <form th:action="@{/professor/auditoria/verificar}" method="post">
+                        <input type="hidden" name="busca" th:value="${busca}">
+                        <button type="submit">Verificar integridade</button>
+                    </form>
+                    <div class="notice notice-success" th:if="${auditoriaMensagem}" role="status"><p th:text="${auditoriaMensagem}"></p></div>
+                    <div class="notice notice-error" th:if="${auditoriaErro}" role="alert"><p th:text="${auditoriaErro}"></p></div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-heading">
+                    <div>
+                        <h2>Registros acadêmicos</h2>
+                        <p class="card-description">Pesquise os alunos e atualize os dados de cada disciplina.</p>
+                    </div>
+                </div>
+                <form class="toolbar" th:action="@{/professor}" method="get">
+                    <div class="field" style="width:min(360px, 100%);">
+                        <label for="busca">Pesquisar aluno</label>
+                        <input type="text" id="busca" name="busca" placeholder="Nome ou matrícula" th:value="${busca}">
+                    </div>
+                    <button type="submit">Pesquisar</button>
+                    <a class="button-link button-secondary" th:href="@{/professor}">Limpar busca</a>
+                </form>
+            </section>
+
+            <section class="card">
+                <div class="card-heading">
+                    <div><h2>Alunos cadastrados</h2><p class="card-description">Os campos de edição permanecem disponíveis somente para o professor.</p></div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>Matrícula/RA</th><th>Nome</th><th>Turma</th><th>Disciplina</th><th>Nota</th><th>Faltas</th><th>Frequência</th><th>Situação</th><th>Alterar nota</th><th>Alterar faltas</th>
+                        </tr></thead>
+                        <tbody>
+                        <tr th:each="registro : ${registros}">
+                            <td th:text="${registro.matricula}"></td>
+                            <td th:text="${registro.nome}"></td>
+                            <td th:text="${registro.turma}"></td>
+                            <td th:text="${registro.disciplina}"></td>
+                            <td th:text="${registro.nota != null ? registro.nota : 'Não cadastrada'}"></td>
+                            <td th:text="${registro.faltas}"></td>
+                            <td><span th:text="${#numbers.formatDecimal(registro.frequencia, 1, 2)}"></span>%</td>
+                            <td><span class="status-pill" th:text="${registro.situacao}"></span></td>
+                            <td>
+                                <form class="inline-form" th:action="@{/professor/nota}" method="post">
+                                    <input type="hidden" name="matricula" th:value="${registro.matricula}">
+                                    <input type="hidden" name="busca" th:value="${busca}">
+                                    <div class="field"><label>Nota (0 a 10)</label><input type="number" name="nota" min="0" max="10" step="0.01" th:value="${registro.nota}" required></div>
+                                    <button class="button-small" type="submit">Salvar</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form class="inline-form" th:action="@{/professor/faltas}" method="post">
+                                    <input type="hidden" name="matricula" th:value="${registro.matricula}">
+                                    <input type="hidden" name="busca" th:value="${busca}">
+                                    <div class="field"><label>Faltas (0 a 120)</label><input type="number" name="faltas" min="0" max="120" step="1" th:value="${registro.faltas}" required></div>
+                                    <button class="button-small" type="submit">Salvar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(registros)}"><td class="empty-state" colspan="10">Nenhum aluno encontrado.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <form class="logout-form" th:action="@{/logout}" method="post"><button class="button-secondary" type="submit">Sair do sistema</button></form>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>
